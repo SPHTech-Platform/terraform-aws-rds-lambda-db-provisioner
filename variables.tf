@@ -48,7 +48,7 @@ variable "memory" {
 
 variable "timeout" {
   type        = number
-  default     = 30
+  default     = 120
   description = "The amount of time your Lambda Function has to run in seconds"
 }
 
