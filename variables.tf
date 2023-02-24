@@ -48,7 +48,7 @@ variable "memory" {
 
 variable "timeout" {
   type        = number
-  default     = 120
+  default     = 30
   description = "The amount of time your Lambda Function has to run in seconds"
 }
 
@@ -117,6 +117,12 @@ variable "db_instance_security_group_id" {
 variable "db_name" {
   type        = string
   description = "Database name that should be created"
+}
+
+variable "db_connect_name" {
+  type        = string
+  description = "Database name that should be created"
+  default     = "postgres"
 }
 
 variable "db_user" {

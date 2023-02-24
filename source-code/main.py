@@ -257,9 +257,7 @@ class DBProvisioner(object):
         connection.close()
 
     def provision(self):
-        self.logger.info("Get instance DB")
         instance = self.describe_instance(os.environ.get('DB_INSTANCE_ID'))
-        self.logger.info("Retrieved Instance Info")
 
         master_password_ssm_param_name = os.environ.get(
             'DB_MASTER_PASSWORD_SSM_PARAM')
@@ -284,7 +282,7 @@ class DBProvisioner(object):
         )
 
         engine: str = instance.get('Engine')
-        if engine == 'postgres' or engine == 'aurora-postgresql':
+        if engine == 'postgres' or engine == 'aurora-postgres':
             self.provision_postgres_db(db_info)
         elif engine == 'mysql':
             self.provision_mysql_db(db_info)
