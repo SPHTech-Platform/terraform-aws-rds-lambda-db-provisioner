@@ -121,7 +121,7 @@ variable "db_name" {
 
 variable "db_connect_name" {
   type        = string
-  description = "Database name that should be created"
+  description = "Default DB Conection Name"
   default     = "postgres"
 }
 
