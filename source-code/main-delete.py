@@ -45,6 +45,8 @@ class DBProvisioner(object):
         self.logger.setLevel(logging.INFO)
         self.ssm_client = boto3.client('ssm')
         self.rds_client = boto3.client('rds')
+        self.rds_iam_session = boto3.Session()
+        self.rds_iam_client = self.rds_iam_session.client('rds')
 
     def describe_instance(self, identifier: str) -> dict:
         response = self.rds_client.describe_db_instances(
@@ -85,12 +87,15 @@ class DBProvisioner(object):
         return rows
 
     def provision_postgres_db(self, info: DBInfo):
+        temp_token = self.rds_iam_client.generate_db_auth_token(
+            DBHostname=info.host, Port=info.port, DBUsername=info.master_username, Region="ap-southeast-1")
+        # self.logger.info("Temp token is '{}'".format(temp_token))
         self.logger.info("Connecting to '{}' database  as user '{}'".format(
             info.connect_db_name, info.master_username))
         try:
             connection_string = "host=%s user=%s password=%s dbname=%s" % \
                                 (info.host, info.master_username,
-                                 info.master_password, info.connect_db_name)
+                                 temp_token, info.connect_db_name)
             connection = psycopg2.connect(connection_string)
             connection.autocommit = True
         except Exception as e:
@@ -105,46 +110,54 @@ class DBProvisioner(object):
         cursor = connection.cursor()
         if info.provision_user:
             usernames = self._get_pg_usernames(cursor)
-            if info.provision_user in usernames:
+            if info.provision_user not in usernames:
                 self.logger.warning(
-                    "User '{}' won't be created because it already exists".format(info.provision_user))
+                    "User '{}' won't be deleted because it already exists".format(info.provision_user))
             else:
                 self.logger.info(
-                    "Creating user '{}'".format(info.provision_user))
+                    "Deleting user '{}'".format(info.provision_user))
 
-                query = "CREATE USER {} WITH PASSWORD '{}' CREATEDB;".format(info.provision_user,
-                                                                             info.provision_user_password)
-                query += "SET ROLE {};".format(info.provision_user)
-                query += "GRANT {} TO {};".format(
-                    info.provision_user_role_to_grant, info.provision_user)
+                # query = "CREATE USER {} WITH LOGIN PASSWORD '{}';".format(info.provision_user,
+                #   info.provision_user_password)
+                # query += "SET ROLE {};".format(info.provision_user)
+                # query += "GRANT {} TO {};".format(
+                #     info.provision_user_role_to_grant, info.master_username)
+                query = "DELETE USER {};".format(info.provision_user)
+                # query += "GRANT {} TO {};".format(
+                #     info.provision_user_role_to_grant, info.provision_user)
                 cursor.execute(query)
 
                 self.logger.info(
-                    "User '{}' successfully created".format(info.provision_user))
+                    "User '{}' successfully deleted".format(info.provision_user))
 
         databases_names = self._get_pg_databases_names(cursor)
 
-        if info.provision_db_name in databases_names:
+        if info.provision_db_name not in databases_names:
             self.logger.warning(
-                "Database '{}' won't be created because it already exists".format(info.provision_db_name))
+                "Database '{}' won't be deleted because it already exists".format(info.provision_db_name))
         else:
-            self.logger.info("Creating database '{}'".format(
+            self.logger.info("Deleting database '{}'".format(
                 info.provision_db_name))
 
-            query = "CREATE DATABASE {};".format(info.provision_db_name)
+            query = "DELETE DATABASE {};".format(info.provision_db_name)
             cursor.execute(query)
 
-            self.logger.info("Database '{}' successfully created".format(
+            self.logger.info("Database '{}' successfully deleted".format(
                 info.provision_db_name))
 
             if info.provision_user:
-                query = "SET ROLE {};".format(info.master_username)
-                query += "GRANT {} TO {};".format(
-                    info.provision_user, info.master_username)
+                # query = "SET ROLE {};".format(info.master_username)
+                # query = "SET ROLE {};".format(info.provision_user)
+                # query += "GRANT {} TO {};".format(
+                #     info.provision_user, info.master_username)
+                # query += "GRANT {} TO {};".format(
+                #     info.provision_user_role_to_grant, info.provision_user)
+                query += "GRANT ALL PRIVILEGES ON DATABASE {} TO {};".format(
+                    info.provision_db_name, info.provision_user)
                 cursor.execute(query)
 
             self.logger.info("User '{}' is now member of '{}' role".format(
-                info.master_username, info.provision_user))
+                info.provision_user, info.provision_user_role_to_grant))
 
         cursor.close()
         connection.close()
@@ -278,11 +291,13 @@ class DBProvisioner(object):
                 'CONNECT_DB_NAME', instance.get('DBName')),
             provision_db_name=os.environ.get('PROVISION_DB_NAME'),
             provision_user=os.environ.get('PROVISION_USER'),
-            provision_user_password=user_password
+            provision_user_password=user_password,
+            provision_user_role_to_grant=os.environ.get(
+                'PROVISION_USER_ROLE_TO_GRANT'),
         )
 
         engine: str = instance.get('Engine')
-        if engine == 'postgres' or engine == 'aurora-postgres':
+        if engine == 'postgres' or engine == 'aurora-postgresql':
             self.provision_postgres_db(db_info)
         elif engine == 'mysql':
             self.provision_mysql_db(db_info)
