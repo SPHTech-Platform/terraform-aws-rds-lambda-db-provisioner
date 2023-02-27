@@ -80,19 +80,19 @@
 # # Label
 # #############################################################
 
-# module "default_label" {
-#   enabled = var.enabled
+module "default_label" {
+  enabled = var.enabled
 
-#   source  = "cloudposse/label/null"
-#   version = "0.24.1"
+  source  = "cloudposse/label/null"
+  version = "0.24.1"
 
-#   attributes = compact(concat(var.attributes, ["db", "provisioner"]))
-#   delimiter  = var.delimiter
-#   name       = var.name
-#   namespace  = var.namespace
-#   stage      = var.stage
-#   tags       = var.tags
-# }
+  attributes = compact(concat(var.attributes, ["db", "provisioner"]))
+  delimiter  = var.delimiter
+  name       = var.name
+  namespace  = var.namespace
+  stage      = var.stage
+  tags       = var.tags
+}
 
 # #############################################################
 # # Lambda Function
