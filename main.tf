@@ -251,7 +251,7 @@ data "aws_iam_policy_document" "default_permissions" {
     actions = [
       "rds-db:connect"
     ]
-    resources = ["arn:aws:rds-db:${var.region}:${var.account_id}:dbuser:${module.rds_aurora_postgres_cluster_logging.cluster_resource_id}/root"]
+    resources = ["arn:aws:rds-db:${var.region}:${var.account_id}:dbuser:${var.db_cluster_id}/root"]
   }
 
 }
