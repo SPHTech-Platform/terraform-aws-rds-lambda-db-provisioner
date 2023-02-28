@@ -85,6 +85,11 @@ variable "logs_kms_key_id" {
   default     = null
 }
 
+variable "db_cluster_id" {
+  type        = string
+  description = "DB Cluster Identifier"
+}
+
 variable "db_instance_id" {
   type        = string
   description = "DB Instance Identifier"
@@ -160,4 +165,15 @@ variable "allowed_egress_cidr_blocks" {
   description = "A list of CIDR blocks allowed to be reached from Lambda. Remember that Lambda needs to be able to communicate with AWS API"
 
   default = ["0.0.0.0/0"]
+}
+
+variable "account_id" {
+  type    = string
+  default = "AWS Account ID"
+}
+
+variable "region" {
+  type        = string
+  description = "AWS Region"
+  default     = "ap-southeast-1"
 }

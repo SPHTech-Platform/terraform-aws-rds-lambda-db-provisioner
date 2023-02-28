@@ -245,6 +245,15 @@ data "aws_iam_policy_document" "default_permissions" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "rds-db:connect"
+    ]
+    resources = ["arn:aws:rds-db:${var.region}:${var.account_id}:dbuser:${module.rds_aurora_postgres_cluster_logging.cluster_resource_id}/root"]
+  }
+
 }
 
 data "aws_iam_policy_document" "lambda_kms_permissions" {
