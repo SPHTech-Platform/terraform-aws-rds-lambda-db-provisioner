@@ -118,8 +118,6 @@ resource "aws_lambda_function" "default" {
   memory_size = var.memory
   kms_key_arn = var.kms_key
 
-  replace_security_groups_on_destroy = true
-
   vpc_config {
     subnet_ids         = var.vpc_config.subnet_ids
     security_group_ids = compact(concat(var.vpc_config.security_group_ids, [join("", aws_security_group.default.*.id)]))
