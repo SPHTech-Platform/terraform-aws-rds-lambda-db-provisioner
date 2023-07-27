@@ -329,11 +329,8 @@ data "aws_iam_policy_document" "user_password_kms_permissions" {
   }
 }
 
-module "aggregated_policy" {
-  source  = "cloudposse/iam-policy-document-aggregator/aws"
-  version = "0.8.0"
-
-  source_documents = compact([
+data "aws_iam_policy_document" "aggregated_policy" {
+  override_policy_documents = compact([
     join("", data.aws_iam_policy_document.default_permissions.*.json),
     join("", data.aws_iam_policy_document.lambda_kms_permissions.*.json),
     join("", data.aws_iam_policy_document.master_password_ssm_permissions.*.json),
@@ -361,7 +358,7 @@ resource "aws_iam_policy" "default" {
   path        = "/"
   description = "IAM policy to control access of Lambda function to AWS resources"
 
-  policy = module.aggregated_policy.result_document
+  policy = data.aws_iam_policy_document.aggregated_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "default_permissions" {
