@@ -131,7 +131,9 @@ resource "aws_lambda_function" "default" {
       PROVISION_DB_NAME                 = var.db_name
       PROVISION_USER                    = var.db_user
       PROVISION_USER_PASSWORD           = var.db_user_password
+      PROVISION_USER_ROLE_TO_GRANT      = var.db_user_role_to_grant
       PROVISION_USER_PASSWORD_SSM_PARAM = var.db_user_password_ssm_param
+      CONNECT_DB_NAME                   = var.db_connect_name
     }
   }
 
@@ -243,6 +245,15 @@ data "aws_iam_policy_document" "default_permissions" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "rds-db:connect"
+    ]
+    resources = ["arn:aws:rds-db:${var.region}:${var.account_id}:dbuser:${var.db_cluster_id}/root"]
+  }
+
 }
 
 data "aws_iam_policy_document" "lambda_kms_permissions" {
@@ -329,11 +340,8 @@ data "aws_iam_policy_document" "user_password_kms_permissions" {
   }
 }
 
-module "aggregated_policy" {
-  source  = "cloudposse/iam-policy-document-aggregator/aws"
-  version = "0.8.0"
-
-  source_documents = compact([
+data "aws_iam_policy_document" "aggregated_policy" {
+  override_policy_documents = compact([
     join("", data.aws_iam_policy_document.default_permissions.*.json),
     join("", data.aws_iam_policy_document.lambda_kms_permissions.*.json),
     join("", data.aws_iam_policy_document.master_password_ssm_permissions.*.json),
@@ -361,7 +369,7 @@ resource "aws_iam_policy" "default" {
   path        = "/"
   description = "IAM policy to control access of Lambda function to AWS resources"
 
-  policy = module.aggregated_policy.result_document
+  policy = data.aws_iam_policy_document.aggregated_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "default_permissions" {

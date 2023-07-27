@@ -85,6 +85,11 @@ variable "logs_kms_key_id" {
   default     = null
 }
 
+variable "db_cluster_id" {
+  type        = string
+  description = "DB Cluster Identifier"
+}
+
 variable "db_instance_id" {
   type        = string
   description = "DB Instance Identifier"
@@ -119,6 +124,12 @@ variable "db_name" {
   description = "Database name that should be created"
 }
 
+variable "db_connect_name" {
+  type        = string
+  description = "Default DB Conection Name"
+  default     = "postgres"
+}
+
 variable "db_user" {
   type        = string
   description = "Name of user that should be created and own (has all permission to) the provisioned database. If left empty, no user will be created"
@@ -143,9 +154,26 @@ variable "db_user_password" {
   default     = null
 }
 
+variable "db_user_role_to_grant" {
+  type        = string
+  description = "Role to be granted to user"
+  default     = null
+}
+
 variable "allowed_egress_cidr_blocks" {
   type        = list(string)
   description = "A list of CIDR blocks allowed to be reached from Lambda. Remember that Lambda needs to be able to communicate with AWS API"
 
   default = ["0.0.0.0/0"]
+}
+
+variable "account_id" {
+  type    = string
+  default = "AWS Account ID"
+}
+
+variable "region" {
+  type        = string
+  description = "AWS Region"
+  default     = "ap-southeast-1"
 }
