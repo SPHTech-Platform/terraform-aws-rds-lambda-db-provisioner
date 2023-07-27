@@ -255,6 +255,7 @@ class DBProvisioner(object):
 
     def provision(self):
         instance = self.describe_instance(os.environ.get('DB_INSTANCE_ID'))
+        self.logger.info(instance)
 
         master_password_ssm_param_name = os.environ.get(
             'DB_MASTER_PASSWORD_SSM_PARAM')
