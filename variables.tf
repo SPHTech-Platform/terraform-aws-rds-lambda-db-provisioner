@@ -149,3 +149,9 @@ variable "allowed_egress_cidr_blocks" {
 
   default = ["0.0.0.0/0"]
 }
+
+variable "db_connect_name" {
+  type        = string
+  description = "Default DB Conection Name"
+  default     = "postgres"
+}

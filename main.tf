@@ -132,6 +132,7 @@ resource "aws_lambda_function" "default" {
       PROVISION_USER                    = var.db_user
       PROVISION_USER_PASSWORD           = var.db_user_password
       PROVISION_USER_PASSWORD_SSM_PARAM = var.db_user_password_ssm_param
+      CONNECT_DB_NAME                   = var.db_connect_name
     }
   }
 
