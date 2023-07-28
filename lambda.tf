@@ -66,6 +66,6 @@ data "aws_lambda_invocation" "default" {
     module.provisoner_lambda
   ]
 
-  function_name = join("", module.provisoner_lambda.lambda_function_name)
+  function_name = module.provisoner_lambda.lambda_function_name
   input         = ""
 }
