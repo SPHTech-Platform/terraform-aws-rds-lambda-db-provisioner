@@ -85,10 +85,10 @@ variable "logs_kms_key_id" {
   default     = null
 }
 
-variable "db_instance_id" {
-  type        = string
-  description = "DB Instance Identifier"
-}
+# variable "db_instance_id" {
+#   type        = string
+#   description = "DB Instance Identifier"
+# }
 
 variable "lambda_name" {
   type        = string
@@ -144,10 +144,10 @@ variable "db_instance_security_group_id" {
   default     = null
 }
 
-variable "db_name" {
-  type        = string
-  description = "Database name that should be created"
-}
+# variable "db_name" {
+#   type        = string
+#   description = "Database name that should be created"
+# }
 
 variable "db_user" {
   type        = string
