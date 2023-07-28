@@ -4,6 +4,7 @@ import random
 import string
 import os
 import psycopg2
+import logging
 
 
 def lambda_handler(event, context):
@@ -15,6 +16,11 @@ def lambda_handler(event, context):
     master_secrets_json = json.loads(master_secrets)
     master_username = master_secrets_json['username']
     master_password = master_secrets_json['password']
+
+    logger = logging.getLogger('db-provisioner')
+    logger.setLevel(logging.INFO)
+    logger.info("Connecting to '{}' database  as user '{}'".format(
+        "postgres", master_username))
 
     # Set new password to database
     provision_db_and_user(master_secrets_json, secret_json)
@@ -59,7 +65,7 @@ def provision_db_and_user(master_secrets_json, secret_json):
 
     try:
         conn = psycopg2.connect(user=master_username, password=master_password,
-                                host=rds_host, port=rds_port, database=database_name)
+                                host=rds_host, port=rds_port, database="postgres")
         cursor = conn.cursor()
 
         # Create user
