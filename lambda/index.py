@@ -17,12 +17,6 @@ def lambda_handler(event, context):
     master_username = master_secrets_json['username']
     master_password = master_secrets_json['password']
 
-    print("testing")
-    # logger = logging.getLogger('db-provisioner')
-    # logger.setLevel(logging.INFO)
-    # logger.info("Connecting to '{}' database  as user '{}'".format(
-    #     "postgres", master_username))
-
     # Set new password to database
     provision_db_and_user(master_secrets_json, secret_json)
 
@@ -67,14 +61,13 @@ def provision_db_and_user(master_secrets_json, secret_json):
     try:
         conn = psycopg2.connect(user=master_username, password=master_password,
                                 host=rds_host, port=rds_port, database="postgres")
+        conn.autocommit = True
         cursor = conn.cursor()
 
         # Create user
         sql = "CREATE USER {} WITH PASSWORD '{}' CREATEDB;".format(
             username, password)
-        # sql += "SET ROLE {};".format(username)
         cursor.execute(sql)
-        conn.commit()
 
         # Create database
         query = "CREATE DATABASE {};".format(database_name)

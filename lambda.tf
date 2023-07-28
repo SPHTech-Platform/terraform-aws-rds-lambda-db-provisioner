@@ -2,12 +2,12 @@ module "provisoner_lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 5.0"
 
-  function_name = var.lambda_name
+  function_name = "${var.lambda_name}-db-provisioner-execution-role"
   handler       = "index.lambda_handler"
   runtime       = "python3.9"
+  timeout       = 7
 
   source_path = "${path.module}/lambda"
-  #local_existing_package = data.archive_file.lambda.output_path
 
   create_current_version_allowed_triggers = false
 
@@ -15,7 +15,7 @@ module "provisoner_lambda" {
   vpc_security_group_ids = var.vpc_config.security_group_ids
   #   compact(concat(var.vpc_config.security_group_ids, [join("", aws_security_group.default.*.id)]))
 
-  role_name = "${var.lambda_name}-role"
+  role_name = "${var.lambda_name}-db-provisioner-execution-role"
 
   attach_policy_statements = true
   policy_statements = {
