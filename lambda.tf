@@ -72,24 +72,11 @@ data "aws_lambda_invocation" "default" {
   input         = ""
 }
 
-variable "psycopg2_source_code_path" {
-  description = "mlflow RDS password rotation lambda fucntion description"
-  type        = string
-  default     = "lambda_layers/psycopg2_python3.9"
-}
-
-data "archive_file" "psycopg2_python_39_zip" {
-  type        = "zip"
-  source_dir  = "${path.module}/${var.psycopg2_source_code_path}"
-  output_path = "${path.module}/psycopg2_layer.zip"
-}
-
 resource "aws_lambda_layer_version" "psycopg2_lambda_layer" {
-  layer_name  = "psycopg2-test"
+  layer_name  = "psycopg2"
   description = "A layer to enable psycopg2 for python3.9"
 
-  filename                 = data.archive_file.psycopg2_python_39_zip.output_path
+  filename                 = "${path.module}/lambda_layers/psycopg2_layer.zip"
   compatible_runtimes      = ["python3.9"]
   compatible_architectures = ["x86_64"]
-  source_code_hash         = data.archive_file.psycopg2_python_39_zip.output_base64sha256
 }
