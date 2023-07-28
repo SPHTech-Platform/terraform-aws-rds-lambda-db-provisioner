@@ -76,7 +76,7 @@ resource "aws_lambda_layer_version" "psycopg2_lambda_layer" {
   layer_name  = "psycopg2"
   description = "A layer to enable psycopg2 for python3.9"
 
-  filename                 = "${path.module}/lambda_layers/psycopg2_layer.zip"
+  filename                 = "${path.module}/lambda_layers/psycopg2_python3.9.zip"
   compatible_runtimes      = ["python3.9"]
   compatible_architectures = ["x86_64"]
 }
