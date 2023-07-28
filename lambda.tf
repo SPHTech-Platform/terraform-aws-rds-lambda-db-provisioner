@@ -57,6 +57,8 @@ module "provisoner_lambda" {
 
 data "aws_lambda_layer_version" "psycopg2_lambda_layer" {
   layer_name = "psycopg2"
+
+  depends_on = [aws_lambda_layer_version.psycopg2_lambda_layer]
 }
 
 data "aws_lambda_invocation" "default" {
