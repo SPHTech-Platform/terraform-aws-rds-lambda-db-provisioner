@@ -90,6 +90,36 @@ variable "db_instance_id" {
   description = "DB Instance Identifier"
 }
 
+variable "lambda_name" {
+  type        = string
+  description = "value of lambda name"
+}
+
+variable "rds_arn" {
+  type        = string
+  description = "value of rds arn"
+}
+
+variable "rds_port" {
+  type        = string
+  description = "value of rds port"
+}
+
+variable "rds_endpoint" {
+  type        = string
+  description = "value of rds port"
+}
+
+variable "rds_user_secret_name" {
+  type        = string
+  description = "value of rds user secret name"
+}
+
+variable "rds_master_user_secret_name" {
+  type        = string
+  description = "values of rds master user secret name"
+}
+
 variable "db_master_password_ssm_param" {
   type        = string
   default     = null
