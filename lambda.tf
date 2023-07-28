@@ -2,10 +2,10 @@ module "provisoner_lambda" {
   source  = "terraform-aws-modules/lambda/aws"
   version = "~> 5.0"
 
-  function_name = "${var.lambda_name}-db-provisioner-execution-role"
+  function_name = "${var.lambda_name}-db-provisioner"
   handler       = "index.lambda_handler"
   runtime       = "python3.9"
-  timeout       = 7
+  timeout       = var.timeout
 
   source_path = "${path.module}/lambda"
 
@@ -13,7 +13,6 @@ module "provisoner_lambda" {
 
   vpc_subnet_ids         = var.vpc_config.subnet_ids
   vpc_security_group_ids = var.vpc_config.security_group_ids
-  #   compact(concat(var.vpc_config.security_group_ids, [join("", aws_security_group.default.*.id)]))
 
   role_name = "${var.lambda_name}-db-provisioner-execution-role"
 
