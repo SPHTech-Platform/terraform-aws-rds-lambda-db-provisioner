@@ -17,10 +17,11 @@ def lambda_handler(event, context):
     master_username = master_secrets_json['username']
     master_password = master_secrets_json['password']
 
-    logger = logging.getLogger('db-provisioner')
-    logger.setLevel(logging.INFO)
-    logger.info("Connecting to '{}' database  as user '{}'".format(
-        "postgres", master_username))
+    print("testing")
+    # logger = logging.getLogger('db-provisioner')
+    # logger.setLevel(logging.INFO)
+    # logger.info("Connecting to '{}' database  as user '{}'".format(
+    #     "postgres", master_username))
 
     # Set new password to database
     provision_db_and_user(master_secrets_json, secret_json)
